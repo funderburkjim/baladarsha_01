@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sanskrit Noun Flashcards</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; padding: 2em; }
+    .card { border: 1px solid #ccc; padding: 2em; margin: 1em auto; width: 300px; cursor: pointer; }
+    .gender { font-size: 0.9em; color: #555; margin-top: 0.5em; }
+  </style>
+</head>
+<body>
+  <h1>Sanskrit Noun Flashcards</h1>
+  <div class="card" onclick="flipCard()">
+    <div id="cardText">अग्नि</div>
+    <div class="gender" id="genderText">Gender: Masculine</div>
+  </div>
+  <button onclick="nextCard()">Next</button>
+
+  <script>
+    const vocab = [
+      { sanskrit: "अग्नि", english: "fire", gender: "Masculine" },
+      { sanskrit: "नदी", english: "river", gender: "Feminine" },
+      { sanskrit: "फलम्", english: "fruit", gender: "Neuter" },
+      { sanskrit: "गजः", english: "elephant", gender: "Masculine" },
+      { sanskrit: "भूमिः", english: "earth", gender: "Feminine" }
+    ];
+
+    // Shuffle the array
+    const shuffled = vocab.sort(() => Math.random() - 0.5);
+
+    let current = 0;
+    let flipped = false;
+
+    function showCard() {
+      const word = shuffled[current];
+      document.getElementById("cardText").textContent = flipped ? word.english : word.sanskrit;
+      document.getElementById("genderText").textContent = flipped ? "" : `Gender: ${word.gender}`;
+    }
+
+    function flipCard() {
+      flipped = !flipped;
+      showCard();
+    }
+
+    function nextCard() {
+      current = (current + 1) % shuffled.length;
+      flipped = false;
+      showCard();
+    }
+
+    showCard();
+  </script>
+</body>
+</html>
