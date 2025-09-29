@@ -1,20 +1,7 @@
 
 09-28-2025
 
-local server
 
-In git bash:
-python -m http.server 8000
-(private networks)
+Github work1tsv/santrain_06
 
-# close server
-Ctrl-C
-
-Browser url
-http://localhost:8000/santrain_03.html
-
-Stop
-====================================
-santrain_04.html
-"Choose file"
-
+https://funderburkjim.github.io/baladarsha_01/work1tsv/santrain_06.html
