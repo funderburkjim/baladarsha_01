@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sanskrit Flashcards</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; padding: 2em; }
+    .card { border: 1px solid #ccc; padding: 2em; margin: 1em auto; width: 300px; cursor: pointer; }
+    .gender { font-size: 0.9em; color: #555; margin-top: 0.5em; }
+    select, input[type="file"], button { margin: 0.5em; }
+    #previewTable { margin: 1em auto; border-collapse: collapse; display: none; }
+    #previewTable th, #previewTable td { border: 1px solid #ccc; padding: 0.5em; }
+  </style>
+</head>
+<body>
+  <h1>Sanskrit Flashcards</h1>
+
+  <!-- Hosted file dropdown -->
+  <label for="vocabSelector">Choose hosted vocab:</label>
+  <select id="vocabSelector" onchange="loadHostedVocab()">
+    <option value="">-- Select --</option>
+    <option value="vocab/nouns.json">Nouns (JSON)</option>
+    <option value="vocab/verbs.tsv">Verbs (TSV)</option>
+    <option value="vocab/animals.tsv">Animals (TSV)</option>
+  </select>
+
+  <!-- File upload -->
+  <br>
+  <label for="fileInput">Or upload your own:</label>
+  <input type="file" id="fileInput" accept=".json,.tsv">
+
+  <!-- Buttons -->
+  <div>
+    <button onclick="prevCard()">Prev</button>
+    <button onclick="nextCard()">Next</button>
+    <button onclick="togglePreview()">Show Preview</button>
+    <button onclick="showInfo()">Info</button>
+  </div>
+
+  <!-- Flashcard -->
+  <div class="card" onclick="flipCard()">
+    <div id="cardText">Choose a vocab set to begin</div>
+    <div class="gender" id="genderText"></div>
+  </div>
+
+  <!-- Preview Table -->
+  <table id="previewTable">
+    <thead>
+      <tr><th>Sanskrit</th><th>English</th><th>Gender</th></tr>
+    </thead>
+    <tbody id="previewBody"></tbody>
+  </table>
+
+  <script>
+    let vocab = [];
+    let current = 0;
+    let flipped = false;
+    let history = [];
+
+    function parseTSV(text) {
+      const lines = text.trim().split('\n');
+      return lines.slice(1).map(line => {
+        const [sanskrit, english, gender] = line.split('\t');
+        return { sanskrit, english, gender };
+      });
+    }
+
+    async function loadHostedVocab() {
+      const url = document.getElementById("vocabSelector").value;
+      if (!url) return;
+
+      try {
+        const response = await fetch(url);
+        const text = await response.text();
+        vocab = url.endsWith('.tsv') ? parseTSV(text) : JSON.parse(text);
+        vocab = vocab.sort(() => Math.random() - 0.5);
+        current = 0;
+        flipped = false;
+        history = [];
+        showCard();
+        updatePreview();
+      } catch (err) {
+        document.getElementById("cardText").textContent = "Error loading hosted vocab.";
+        console.error("Fetch error:", err);
+      }
+    }
+
+    document.getElementById('fileInput').addEventListener('change', function(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const text = e.target.result;
+          vocab = file.name.endsWith('.tsv') ? parseTSV(text) : JSON.parse(text);
+          vocab = vocab.sort(() => Math.random() - 0.5);
+          current = 0;
+          flipped = false;
+          history = [];
+          showCard();
+          updatePreview();
+        } catch (err) {
+          document.getElementById("cardText").textContent = "Invalid file format.";
+          console.error("Parse error:", err);
+        }
+      };
+      reader.readAsText(file);
+    });
+
+    function showCard() {
+      if (vocab.length === 0) return;
+      const word = vocab[current];
+      document.getElementById("cardText").textContent = flipped ? word.english : word.sanskrit;
+      document.getElementById("genderText").textContent = flipped ? "" : `Gender: ${word.gender}`;
+    }
+
+    function flipCard() {
+      flipped = !flipped;
+      showCard();
+    }
+
+    function nextCard() {
+      history.push(current);
+      current = (current + 1) % vocab.length;
+      flipped = false;
+      showCard();
+    }
+
+    function prevCard() {
+      if (history.length === 0) return;
+      current = history.pop();
+      flipped = false;
+      showCard();
+    }
+
+    function togglePreview() {
+      const table = document.getElementById("previewTable");
+      table.style.display = table.style.display === "none" ? "table" : "none";
+    }
+
+    function updatePreview() {
+      const tbody = document.getElementById("previewBody");
+      tbody.innerHTML = "";
+      vocab.forEach(entry => {
+        const row = document.createElement("tr");
+        row.innerHTML = `<td>${entry.sanskrit}</td><td>${entry.english}</td><td>${entry.gender}</td>`;
+        tbody.appendChild(row);
+      });
+    }
+
+    function showInfo() {
+      alert("Click the flashcard to flip and reveal the answer.\nUse 'Next' and 'Prev' to navigate.\nUse 'Show Preview' to view the full vocab list.");
+    }
+  </script>
+</body>
+</html>

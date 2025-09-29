@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sanskrit Noun Flashcards</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; padding: 2em; }
+    .card { border: 1px solid #ccc; padding: 2em; margin: 1em auto; width: 300px; cursor: pointer; }
+    .gender { font-size: 0.9em; color: #555; margin-top: 0.5em; }
+  </style>
+</head>
+<body>
+  <h1>Sanskrit Noun Flashcards</h1>
+  <div class="card" onclick="flipCard()">
+    <div id="cardText">Loading...</div>
+    <div class="gender" id="genderText"></div>
+  </div>
+  <button onclick="nextCard()">Next</button>
+
+  <script>
+    let vocab = [];
+    let current = 0;
+    let flipped = false;
+
+    async function loadVocab() {
+      try {
+        const response = await fetch('vocab.json');
+        const data = await response.json();
+        vocab = data.sort(() => Math.random() - 0.5); // Shuffle
+        showCard();
+      } catch (error) {
+        document.getElementById("cardText").textContent = "Error loading vocab.";
+        console.error("Failed to load vocab:", error);
+      }
+    }
+
+    function showCard() {
+      if (vocab.length === 0) return;
+      const word = vocab[current];
+      document.getElementById("cardText").textContent = flipped ? word.english : word.sanskrit;
+      document.getElementById("genderText").textContent = flipped ? "" : `Gender: ${word.gender}`;
+    }
+
+    function flipCard() {
+      flipped = !flipped;
+      showCard();
+    }
+
+    function nextCard() {
+      current = (current + 1) % vocab.length;
+      flipped = false;
+      showCard();
+    }
+
+    loadVocab();
+  </script>
+</body>
+</html>
