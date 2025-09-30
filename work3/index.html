@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sanskrit Flashcards</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- <h1>Sanskrit Flashcards</h1> -->
+  <div style="display: flex; justify-content: center; align-items: center; gap: 1em;">
+  <h1 style="margin: 0;">Sanskrit Flashcards</h1>
+  <a href="info.html" target="_blank" title="Help / Info">
+    <button class="infoButton">?</button>
+  </a>
+</div>
+  <button onclick="openVocabModal()">Choose Vocabulary</button>
+
+  <div id="flashcardPanel" style="display:none;">
+    <div class="card" onclick="flipCard()">
+      <div id="cardText"></div>
+      <div class="gender" id="genderText"></div>
+    </div>
+    <button onclick="prevCard()">Prev</button>
+    <button onclick="nextCard()">Next</button>
+  </div>
+
+  <!-- Vocabulary Modal -->
+  <div id="vocabModal" class="modal">
+    <div class="modalContent">
+      <h2>Select Vocabulary</h2>
+      <select id="vocabSelector"><option value="">-- Select --</option></select>
+
+      <!-- File upload section (commented out) -->
+      <!--
+      <label for="fileInput">Or upload your own:</label>
+      <input type="file" id="fileInput" accept=".json,.tsv">
+      -->
+
+      <button onclick="loadSelectedVocab()">Load</button>
+      <button onclick="closeVocabModal()">Cancel</button>
+    </div>
+  </div>
+
+  <!-- Preview Modal -->
+  <div id="modalOverlay">
+    <div id="modalContent">
+      <h2>Preview Vocabulary</h2>
+      <div id="previewScroll">
+        <table id="previewTable">
+          <thead><tr><th>Sanskrit</th><th>English</th><th>Info</th></tr></thead>
+          <tbody id="previewBody"></tbody>
+        </table>
+      </div>
+      <button onclick="closeModal()">Start Flashcards</button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,3 @@
+vocab/animals.json
+vocab/animals.tsv
+vocab/nouns.json
